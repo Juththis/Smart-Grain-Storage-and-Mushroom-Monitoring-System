@@ -147,15 +147,10 @@ are processed using the:
 # Temperature Processing Architecture
 
 ```text
-AHT10 Temperature
-        │
-        │
-        ├───────────────┐
+
+AHT10 Temperature   NTC Temperature
         │               │
-        ▼               ▼
-    Calibration     NTC Temperature
-        │               │
-        │          Calibration
+   Calibration      Calibration
         │               │
         └───────┬───────┘
                 ▼
