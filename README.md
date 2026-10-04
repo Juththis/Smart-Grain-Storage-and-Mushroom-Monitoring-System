@@ -749,9 +749,9 @@ The current threshold-based system provides an interpretable engineering baselin
             CENTRAL DASHBOARD
                     │
        ┌────────────┼────────────┐
-       ▼            ▼            ▼
- Temperature        RH    
-       │            │            │
+       ▼                         ▼
+ Temperature                     RH
+       │                         │
        └────────────┼────────────┘
                     ▼
        Application-Specific
