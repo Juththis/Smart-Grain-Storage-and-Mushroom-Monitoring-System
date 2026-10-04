@@ -7,7 +7,7 @@
 
 The **Smart Grain and Mushroom Monitoring System** is a low-cost distributed IoT platform designed to monitor environmental conditions in **grain-storage facilities and mushroom-growing environments**.
 
-Both applications are highly sensitive to environmental conditions. Temperature, relative humidity, and changes in air quality can significantly affect grain quality, fungal activity, mushroom growth conditions, and overall storage or cultivation performance.
+Both applications are highly sensitive to environmental conditions. Temperature and relative humidity can significantly affect grain quality, fungal activity, mushroom growth conditions, and overall storage or cultivation performance.
 
 The system uses multiple smart sensing nodes placed at selected locations within the monitored environment. Each node measures important environmental parameters, performs local processing, and transmits live telemetry to a centralized dashboard.
 
@@ -15,7 +15,7 @@ The project is being developed in three stages:
 
 1. **Semi-final proof-of-concept prototype**
 2. **Final competition product-level sensing node**
-3. **Future data-driven and machine-learning implementation**
+3. **Future data-driven, CO₂-monitoring, and machine-learning implementation**
 
 ---
 
@@ -25,7 +25,7 @@ Environmental conditions can vary significantly at different locations within a 
 
 For grain storage, unfavorable combinations of temperature and humidity can create conditions associated with spoilage, fungal activity, and deterioration.
 
-For mushroom cultivation, temperature and relative humidity must remain within suitable ranges to maintain appropriate growing conditions. Air-quality-related changes may also provide additional information about the environmental state of the growing area.
+For mushroom cultivation, temperature and relative humidity must remain within suitable ranges to maintain appropriate growing conditions.
 
 Periodic manual measurements or a single sensing point may not provide sufficient information about spatial variations across the monitored environment.
 
@@ -49,7 +49,6 @@ The final system is designed to monitor:
 
 - Temperature
 - Relative humidity
-- Air-quality-related parameters
 - Node connectivity and operating status
 - Overall environmental-condition level
 
@@ -80,7 +79,6 @@ The main parameters are:
 
 - Fused temperature
 - Relative humidity
-- Air-quality-related measurements
 
 The system is intended to indicate whether environmental conditions are becoming unfavorable rather than directly claiming the presence of fungal growth.
 
@@ -92,7 +90,6 @@ The sensing nodes can continuously monitor:
 
 - Temperature
 - Relative humidity
-- Air-quality-related environmental changes
 
 The dashboard can indicate whether the environmental conditions remain within the selected operating ranges for the target mushroom-growing stage.
 
@@ -126,7 +123,7 @@ The AHT10 provides:
 - Relative-humidity measurement
 - I2C communication with the ESP32
 
-For temperature measurement, the a sensor-fusion architecture is retained.
+For temperature measurement, a sensor-fusion architecture is implemented.
 
 Temperature measurements from:
 
@@ -173,7 +170,7 @@ AHT10 Temperature  NTC Temperature
 
 Weighted Least Squares is used because the two temperature sensors have different measurement uncertainties.
 
-Instead of assigning equal importance to both measurements, the fusion algorithm gives greater contribution to the more reliable sensor according to experimentally determined characteristics.
+Instead of assigning equal importance to both measurements, the fusion algorithm gives greater contribution to the more reliable sensor according to experimentally determined characteristics. Weights are given as inverse variances.
 
 The fused output is then passed through a Kalman filter to reduce short-term fluctuations.
 
@@ -193,7 +190,7 @@ Relative humidity contributes to the overall assessment of storage conditions as
 
 Relative humidity is a key environmental parameter for maintaining suitable mushroom-growing conditions.
 
-The measured RH value will therefore be combined with temperature and air-quality-related information in the final condition-assessment logic.
+The measured RH value will therefore be evaluated together with the fused temperature in the final condition-assessment logic.
 
 ---
 
@@ -278,7 +275,6 @@ The final competition version of the sensing node is planned to include:
 - ESP32 microcontroller
 - AHT10 temperature and relative-humidity sensor
 - NTC thermistor
-- MQ-135 air-quality sensor
 - Buzzer
 - Custom PCB
 - Power-management circuitry
@@ -290,35 +286,12 @@ The GPS and OLED used in the development prototype will therefore not remain as 
 
 ---
 
-# MQ-135 Air-Quality Monitoring
+# Environmental Condition Assessment
 
-The MQ-135 sensor is included in the final product architecture as an additional environmental sensing parameter.
-
-The MQ-135 is intended to be used as an **air-quality-related indicator**, not as a precise laboratory gas analyzer or a selective detector of one specific gas.
-
-Its response will be combined with temperature and relative humidity to provide additional information about changing environmental conditions.
-
-```text
-Temperature
-     +
-Relative Humidity
-     +
-Air-Quality Indicator
-     ↓
-Environmental Condition Assessment
-```
-
----
-
-# Multi-Parameter Condition Assessment
-
-The final system will combine multiple environmental parameters when evaluating the monitored environment.
-
-The main inputs will be:
+The final system evaluates environmental conditions using:
 
 - Fused temperature
 - Relative humidity
-- Air-quality-related measurement
 
 The condition-assessment thresholds will be selected from relevant research papers and suitable technical sources.
 
@@ -349,7 +322,7 @@ The system does not treat one sensor reading as direct proof of spoilage, contam
 ```text
 NORMAL
    │
-   ├── Parameters within selected operating limits
+   ├── Temperature and RH within selected operating limits
    │
 WARNING
    │
@@ -357,7 +330,7 @@ WARNING
    │
 CRITICAL
    │
-   └── Combined conditions outside selected acceptable limits
+   └── Temperature and/or RH outside selected acceptable limits
 ```
 
 The exact limits will be documented together with the supporting research references.
@@ -425,7 +398,6 @@ The final dashboard is intended to display:
 - Node ID
 - Fused temperature
 - Relative humidity
-- Air-quality-related measurement
 - Node connectivity
 - Selected monitoring mode
 - Environmental-condition classification
@@ -469,46 +441,6 @@ This allows the system to provide an alert both remotely and directly at the mon
 
 ---
 
-# Custom PCB
-
-A custom PCB has been designed for the final sensing node.
-
-The PCB is intended to replace prototype wiring with a more compact, organized, and reliable hardware platform.
-
-The PCB includes the required connections for:
-
-- ESP32
-- AHT10
-- NTC thermistor
-- MQ-135
-- Buzzer
-- Power circuitry
-- Temporary GPS connection
-- Sensor interfaces
-- Required communication and control connections
-
-The PCB has also been designed with the mechanical enclosure in mind.
-
-
-# Mechanical Enclosure
-
-A dedicated enclosure has been designed for the sensing node.
-
-The enclosure is intended to:
-
-- Protect the electronics
-- Secure the PCB
-- Provide suitable sensor exposure
-- Provide ventilation where required
-- Allow practical installation
-- Provide access to required connectors
-- Protect components from accidental mechanical contact
-- Support deployment in grain-storage and mushroom-monitoring environments
-
-The PCB and enclosure are being developed together so that the final system can be implemented as a complete sensing product rather than remaining as a laboratory prototype.
-
----
-
 # Prototype vs Final Product
 
 | Feature | Semi-Final Prototype | Final Competition Model |
@@ -523,13 +455,13 @@ The PCB and enclosure are being developed together so that the final system can 
 | Node-RED Dashboard | ✅ | ✅ |
 | GPS | ✅ Development / verification | Temporary connection only |
 | OLED | ✅ Development / verification | ❌ Removed |
-| MQ-135 | Under development | ✅ |
 | Buzzer | Under development | ✅ |
 | Custom PCB | Designed | ✅ |
 | Custom Enclosure | Designed | ✅ |
 | Live Telemetry | ✅ | ✅ |
 | Grain Condition Assessment | Under development | ✅ |
 | Mushroom Condition Assessment | Under development | ✅ |
+| CO₂ Monitoring | ❌ | Future implementation |
 | Machine Learning | ❌ | Future development |
 
 ---
@@ -579,7 +511,6 @@ Centralized Monitoring
 - ESP32
 - AHT10 temperature and relative-humidity sensor
 - NTC thermistor
-- MQ-135 air-quality sensor
 - Buzzer
 - NEO-6M GPS for development / temporary location initialization
 - OLED for prototype development
@@ -595,7 +526,7 @@ Centralized Monitoring
 - Outlier rejection
 - Weighted Least Squares sensor fusion
 - Kalman filtering
-- Multi-parameter condition evaluation
+- Temperature and RH condition evaluation
 - Alarm control
 
 ## Communication
@@ -637,9 +568,9 @@ The same node and communication architecture can support different environmental
 
 Development-only components such as the OLED and continuously operating GPS are removed from the final product when no longer required.
 
-## Multi-Parameter Monitoring
+## Dual-Parameter Monitoring
 
-The final condition assessment uses multiple environmental measurements rather than depending on temperature alone.
+The current condition assessment uses temperature and relative humidity, which are directly relevant to the environmental suitability of grain storage and mushroom cultivation.
 
 ## Dual-Application Architecture
 
@@ -658,7 +589,6 @@ The current system is still at the prototype and semi-final development stage.
 
 Current limitations include:
 
-- MQ-135 integration is still being completed
 - Buzzer integration is still being completed
 - Grain-condition assessment logic requires final validation
 - Mushroom-condition assessment logic requires final validation
@@ -667,7 +597,6 @@ Current limitations include:
 - Long-duration testing in representative environments is still required
 - Power consumption and battery life require further characterization
 - Wi-Fi availability may affect live communication
-- MQ-135 output is used as an indicative air-quality signal rather than a highly selective gas measurement
 - Larger-scale multi-node deployment requires further validation
 
 ---
@@ -676,9 +605,8 @@ Current limitations include:
 
 The following improvements are planned before the final competition:
 
-1. Complete MQ-135 sensor integration.
-2. Complete buzzer integration.
-3. Finalize the combined temperature, RH, and air-quality assessment logic.
+1. Complete buzzer integration.
+2. Finalize the combined temperature and RH assessment logic.
 4. Define separate threshold sets for grain storage and mushroom monitoring.
 5. Document threshold values using relevant research papers and technical sources.
 6. Manufacture and test the custom PCB.
@@ -695,6 +623,37 @@ The following improvements are planned before the final competition:
 
 ---
 
+# Future Implementation – CO₂ Level Monitoring
+
+A future version of the system may include a **dedicated NDIR CO₂ sensor** to provide direct CO₂ concentration measurements in ppm.
+
+CO₂ monitoring could add useful information for both applications.
+
+## Grain Storage
+
+Changes in CO₂ concentration can provide an additional indicator of biological respiration and changing storage conditions. In a future implementation, CO₂ measurements could be evaluated together with fused temperature, relative humidity, and historical trends to strengthen environmental-risk assessment.
+
+## Mushroom Monitoring
+
+CO₂ concentration is an important environmental parameter in mushroom-growing environments. A future node could therefore use direct NDIR CO₂ monitoring together with temperature and relative humidity to provide more complete cultivation-condition monitoring.
+
+The future sensing concept would become:
+
+```text
+Temperature
+    +
+Relative Humidity
+    +
+NDIR CO₂ Measurement
+    ↓
+Improved Environmental
+Condition Assessment
+```
+
+A dedicated NDIR sensor would be used rather than estimating CO₂ indirectly.
+
+---
+
 # Future Development – Data Logging and Machine Learning
 
 The current system uses research-based thresholds and interpretable engineering decision logic.
@@ -705,7 +664,7 @@ The datasets may include:
 
 - Temperature
 - Relative humidity
-- Air-quality measurements
+- CO₂ concentration when future CO₂ sensing is implemented
 - Time information
 - Node / location information
 - Selected application
@@ -731,6 +690,8 @@ Live IoT Monitoring
 Historical Data Collection
         ↓
 Dataset Development
+        ↓
+CO₂ Monitoring Extension
         ↓
 Data Analysis
         ↓
@@ -760,7 +721,7 @@ The current threshold-based system provides an interpretable engineering baselin
  │                                     │
  │ AHT10 → Temperature + RH            │
  │ NTC   → Temperature                 │
- │ MQ135 → Air-Quality Indicator       │
+ │                                     │
  │                                     │
  │ ESP32                               │
  │ ├── Calibration                     │
@@ -789,7 +750,7 @@ The current threshold-based system provides an interpretable engineering baselin
                     │
        ┌────────────┼────────────┐
        ▼            ▼            ▼
- Temperature        RH      Air Quality
+ Temperature        RH    
        │            │            │
        └────────────┼────────────┘
                     ▼
